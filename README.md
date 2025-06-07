@@ -6,6 +6,30 @@
 ![VS Code](https://img.shields.io/badge/VS%20Code-^1.100.0-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+## 🎥 Demo
+
+### Watch AI Crash Finder in Action
+
+<!-- Option 1: Using a GIF preview with link to video -->
+[![AI Crash Finder Demo](./assets/demo-preview.gif)](./Demo.mp4)
+*Click the image above to watch the full demo video*
+
+<!-- Option 2: Direct link to video file -->
+[📹 Watch Demo Video (Demo.mp4)](./Demo.mp4)
+
+<!-- Option 3: If you upload to YouTube/Vimeo -->
+<!-- [![AI Crash Finder Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID) -->
+
+### Quick Demo Walkthrough
+
+<details>
+<summary>🎬 See Demo Screenshots</summary>
+
+1. **Configure Azure OpenAI**
+   ![Configure](./Demo.mp4)
+
+</details>
+
 ## ✨ Features
 
 - **🤖 AI-Powered Analysis**: Leverages Azure OpenAI to analyze git diffs and identify potential causes of production issues
