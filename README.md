@@ -12,15 +12,6 @@
 
 [![AI Crash Finder Demo](./media/icon.png)](https://youtu.be/D_PBbQ-rMAI)
 
-### Quick Demo Walkthrough
-
-<details>
-
-1. **Configure Azure OpenAI**
-   ![Configure](./Demo.mp4)
-
-</details>
-
 ## ✨ Features
 
 - **🤖 AI-Powered Analysis**: Leverages Azure OpenAI to analyze git diffs and identify potential causes of production issues
