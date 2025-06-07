@@ -1,6 +1,6 @@
-# 🔍 AI Crash Finder
+# 🔍 AI Git
 
-**AI Crash Finder** is a VS Code extension that uses Azure OpenAI to analyze git diffs and help developers quickly identify the root cause of production issues. It examines code changes between commits and provides intelligent insights about what might have caused a crash or bug.
+**AI Git** is a VS Code extension that uses Azure OpenAI to analyze git diffs and help developers quickly identify the root cause of production issues. It examines code changes between commits and provides intelligent insights about what might have caused a crash or bug.
 
 ![Version](https://img.shields.io/badge/version-0.0.1-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-^1.100.0-brightgreen)
@@ -8,9 +8,9 @@
 
 ## 🎥 Demo
 
-### Watch AI Crash Finder in Action
+### Watch AI Git in Action
 
-[![AI Crash Finder Demo](./media/icon.png)](https://youtu.be/D_PBbQ-rMAI)
+[![AI Git Demo](./media/icon.png)](https://youtu.be/D_PBbQ-rMAI)
 
 ## ✨ Features
 
