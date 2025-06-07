@@ -163,7 +163,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 🐛 [Report Issues](https://github.com/yourusername/ai-crash-finder/issues)
 - 💬 [Discussions](https://github.com/yourusername/ai-crash-finder/discussions)
-- 📧 Email: support@aicrashfinder.com
+- 📧 Email: moti@u-btech.com
 
 ---
 
