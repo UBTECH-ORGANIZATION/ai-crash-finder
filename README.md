@@ -10,20 +10,12 @@
 
 ### Watch AI Crash Finder in Action
 
-<!-- Option 1: Using a GIF preview with link to video -->
-[![AI Crash Finder Demo](./assets/demo-preview.gif)](./Demo.mp4)
-*Click the image above to watch the full demo video*
-
-<!-- Option 2: Direct link to video file -->
-[📹 Watch Demo Video (Demo.mp4)](./Demo.mp4)
-
-<!-- Option 3: If you upload to YouTube/Vimeo -->
-<!-- [![AI Crash Finder Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID) -->
+Option 3: If you upload to YouTube/Vimeo -->
+[![AI Crash Finder Demo](./media/icon.png)](https://youtu.be/D_PBbQ-rMAI)
 
 ### Quick Demo Walkthrough
 
 <details>
-<summary>🎬 See Demo Screenshots</summary>
 
 1. **Configure Azure OpenAI**
    ![Configure](./Demo.mp4)

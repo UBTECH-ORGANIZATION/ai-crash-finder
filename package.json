@@ -2,7 +2,7 @@
   "name": "ai-crash-finder",
   "displayName": "AI Crash Finder",
   "description": "AI-powered root cause analysis for production issues using Git history",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "motimalka",
   "icon": "media/icon.png",
   "engines": {
