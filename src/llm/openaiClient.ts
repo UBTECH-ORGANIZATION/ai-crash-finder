@@ -37,14 +37,28 @@ ${diff}
 Please analyze the changes and provide:
 1. The most likely files and line numbers related to the issue
 2. Your reasoning for why these changes might have caused the issue
-3. Potential solutions or areas to investigate further`;
+3. Potential solutions or areas to investigate further
+4. If applicable, provide specific code fixes in the following format:
+   - Show the problematic code that needs to be removed with comments like "// remove: reason"
+   - Show the fixed code that needs to be added with comments like "// add: reason"
+   - Use code blocks with the appropriate language syntax
+
+Example format for code suggestions:
+\`\`\`javascript
+// remove: vulnerable to SQL injection
+const query = \`SELECT * FROM users WHERE id = \${userId}\`;
+
+// add: use parameterized queries
+const query = 'SELECT * FROM users WHERE id = ?';
+const result = await db.query(query, [userId]);
+\`\`\``;
 
         const response = await client.chat.completions.create({
             model: config.deployment,
             messages: [
                 {
                     role: "system",
-                    content: "You are a skilled software developer analyzing Git changes to find root causes of production issues."
+                    content: "You are a skilled software developer analyzing Git changes to find root causes of production issues. When suggesting code fixes, clearly mark lines to be removed and added with appropriate comments."
                 },
                 {
                     role: "user",

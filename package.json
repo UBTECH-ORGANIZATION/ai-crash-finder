@@ -1,14 +1,28 @@
 {
   "name": "ai-crash-finder",
-  "displayName": "ai-crash-finder",
+  "displayName": "AI Crash Finder",
   "description": "AI-powered root cause analysis for production issues using Git history",
   "version": "0.0.1",
+  "publisher": "u-btech-devops",
+  "icon": "media/icon.png",
   "engines": {
     "vscode": "^1.100.0"
   },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "AI",
+    "crash",
+    "debug",
+    "git",
+    "azure",
+    "openai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ai-crash-finder"
+  },
   "activationEvents": [
     "onCommand:ai-crash-finder.analyzeIssue"
   ],
@@ -17,21 +31,56 @@
     "commands": [
       {
         "command": "ai-crash-finder.analyzeIssue",
-        "title": "AI: Analyze Issue from Git Diff"
+        "title": "AI: Analyze Issue from Git Diff",
+        "icon": "$(bug)"
       },
       {
         "command": "aiCrashFinder.analyze",
-        "title": "AI Crash Finder: Analyze Issue"
+        "title": "AI Crash Finder: Analyze Issue",
+        "icon": "$(search)"
       },
       {
         "command": "aiCrashFinder.configure",
-        "title": "AI Crash Finder: Configure Azure OpenAI"
+        "title": "AI Crash Finder: Configure Azure OpenAI",
+        "icon": "$(gear)"
       },
       {
         "command": "aiCrashFinder.clearConfig",
-        "title": "AI Crash Finder: Clear Configuration"
+        "title": "AI Crash Finder: Clear Configuration",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "aiCrashFinder.openResults",
+        "title": "AI Crash Finder: Open Results Folder",
+        "icon": "$(folder-opened)"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "ai-crash-finder.analyzeIssue"
+        },
+        {
+          "command": "aiCrashFinder.analyze"
+        },
+        {
+          "command": "aiCrashFinder.configure"
+        },
+        {
+          "command": "aiCrashFinder.clearConfig"
+        },
+        {
+          "command": "aiCrashFinder.openResults"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "ai-crash-finder.analyzeIssue",
+          "group": "ai-crash-finder",
+          "when": "resourceScheme == file"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

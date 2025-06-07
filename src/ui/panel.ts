@@ -1,85 +1,265 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class ResultPanel {
-    public static currentPanel: ResultPanel | undefined;
-    private readonly _panel: vscode.WebviewPanel;
-    private _disposables: vscode.Disposable[] = [];
+    private static resultFolder: string;
 
-    private constructor(panel: vscode.WebviewPanel) {
-        this._panel = panel;
-        this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-    }
-
-    public static createOrShow(extensionUri: vscode.Uri, content: string) {
-        const column = vscode.window.activeTextEditor
-            ? vscode.window.activeTextEditor.viewColumn
-            : undefined;
-
-        if (ResultPanel.currentPanel) {
-            ResultPanel.currentPanel._panel.reveal(column);
-            ResultPanel.currentPanel.update(content);
+    public static async createOrShow(
+        context: vscode.ExtensionContext,
+        analysis: string,
+        issueDescription: string,
+        fromCommit: string,
+        toCommit: string
+    ) {
+        // Create results folder in workspace or temp directory
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders) {
+            this.resultFolder = path.join(workspaceFolders[0].uri.fsPath, '.ai-crash-finder-results');
         } else {
-            const panel = vscode.window.createWebviewPanel(
-                'aiCrashFinder',
-                'AI Analysis Result',
-                column || vscode.ViewColumn.One,
-                {
-                    enableScripts: true,
-                    retainContextWhenHidden: true,
-                }
-            );
-            ResultPanel.currentPanel = new ResultPanel(panel);
-            ResultPanel.currentPanel.update(content);
+            this.resultFolder = path.join(context.globalStorageUri.fsPath, 'results');
         }
-    }
 
-    private update(content: string) {
-        this._panel.webview.html = this._getHtmlForWebview(content);
-    }
+        // Ensure the folder exists
+        if (!fs.existsSync(this.resultFolder)) {
+            fs.mkdirSync(this.resultFolder, { recursive: true });
+        }
 
-    private _getHtmlForWebview(content: string): string {
-        const htmlContent = content.replace(/\n/g, '<br>');
-        
-        return `<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>AI Analysis Result</title>
-            <style>
-                body {
-                    padding: 20px;
-                    line-height: 1.6;
-                    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-                }
-                .container {
-                    max-width: 800px;
-                    margin: 0 auto;
-                }
-                pre {
-                    background-color: #f5f5f5;
-                    padding: 15px;
-                    border-radius: 5px;
-                    overflow-x: auto;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                ${htmlContent}
-            </div>
-        </body>
-        </html>`;
-    }
+        // Generate filename with timestamp
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `analysis-${timestamp}.md`;
+        const filepath = path.join(this.resultFolder, filename);
 
-    private dispose() {
-        ResultPanel.currentPanel = undefined;
-        this._panel.dispose();
-        while (this._disposables.length) {
-            const disposable = this._disposables.pop();
-            if (disposable) {
-                disposable.dispose();
+        // Create markdown content
+        const markdownContent = this.generateMarkdownContent(
+            analysis,
+            issueDescription,
+            fromCommit,
+            toCommit
+        );
+
+        // Write file
+        fs.writeFileSync(filepath, markdownContent);
+
+        // Open the file
+        const doc = await vscode.workspace.openTextDocument(filepath);
+        await vscode.window.showTextDocument(doc, vscode.ViewColumn.One);
+
+        // Show markdown preview
+        await vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(filepath));
+
+        // Show info message with file location
+        vscode.window.showInformationMessage(
+            `Analysis saved to: ${filename}`,
+            'Open Folder'
+        ).then(selection => {
+            if (selection === 'Open Folder') {
+                vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(this.resultFolder));
             }
+        });
+    }
+
+    private static generateMarkdownContent(
+        analysis: string,
+        issueDescription: string,
+        fromCommit: string,
+        toCommit: string
+    ): string {
+        const timestamp = new Date().toLocaleString();
+        
+        // Extract code suggestions from the analysis
+        const codeSuggestions = this.extractCodeSuggestions(analysis);
+        
+        return `# 🔍 AI Crash Finder Analysis Report
+
+## 📋 Summary
+
+| Field | Value |
+|-------|-------|
+| **Analysis Date** | ${timestamp} |
+| **Commit Range** | \`${fromCommit.substring(0, 7)}\` → \`${toCommit.substring(0, 7)}\` |
+| **Issue Description** | ${issueDescription} |
+
+---
+
+## 🤖 AI Analysis Results
+
+${analysis}
+
+---
+
+## 💡 Suggested Code Changes
+
+${codeSuggestions}
+
+---
+
+## 📝 Next Steps
+
+- [ ] Review the identified suspicious code sections
+- [ ] Check the suggested files and line numbers
+- [ ] Validate the analysis with your team
+- [ ] Implement the suggested solutions
+- [ ] Test the fixes in a development environment
+- [ ] Deploy to staging for verification
+
+---
+
+## 🔗 Quick Actions
+
+- **View Full Diff**: Run \`git diff ${fromCommit} ${toCommit}\` in terminal
+- **Show Commit Log**: Run \`git log --oneline ${fromCommit}..${toCommit}\` in terminal
+- **Checkout Commit**: Run \`git checkout ${toCommit}\` to inspect the code
+
+---
+
+<details>
+<summary>📊 Additional Information</summary>
+
+### Environment
+- Extension: AI Crash Finder
+- Analysis Engine: Azure OpenAI
+- Generated at: ${new Date().toISOString()}
+
+### Commands Used
+\`\`\`bash
+# Get the diff that was analyzed
+git diff ${fromCommit} ${toCommit}
+
+# See all commits in the range
+git log ${fromCommit}..${toCommit}
+
+# See detailed commit information
+git show ${toCommit}
+\`\`\`
+
+</details>
+
+---
+
+*Generated by [AI Crash Finder](https://github.com/yourusername/ai-crash-finder) - Your AI-powered production issue analyzer*
+`;
+    }
+
+    private static extractCodeSuggestions(analysis: string): string {
+        // Check if the analysis contains code suggestions
+        if (!analysis.includes('```') && !analysis.includes('fix') && !analysis.includes('solution')) {
+            return this.generateExampleCodeSuggestion();
+        }
+        
+        // If code blocks exist in the analysis, format them with diff notation
+        return this.formatCodeSuggestionsAsDiff(analysis);
+    }
+
+    private static generateExampleCodeSuggestion(): string {
+        return `### 🔧 Code Fix Template
+
+Based on the analysis, here's a template for the suggested fixes:
+
+\`\`\`diff
+# Example file: src/auth/login.js
+
+  function handleLogin(username, password) {
+-   // Remove: Direct database query without validation
+-   const user = db.query(\`SELECT * FROM users WHERE username = '\${username}'\`);
++   // Add: Parameterized query with validation
++   if (!username || !password) {
++     throw new Error('Username and password are required');
++   }
++   const user = db.query('SELECT * FROM users WHERE username = ?', [username]);
+    
+    if (!user) {
+      return { error: 'Invalid credentials' };
+    }
+    
+-   // Remove: Plain text password comparison
+-   if (user.password === password) {
++   // Add: Secure password comparison
++   if (await bcrypt.compare(password, user.hashedPassword)) {
+      return { success: true, token: generateToken(user) };
+    }
+  }
+\`\`\`
+
+### 📌 Legend
+- 🔴 Lines starting with \`-\` should be **removed** (shown in red in diff tools)
+- 🟢 Lines starting with \`+\` should be **added** (shown in green in diff tools)
+- ⚪ Lines without prefix remain **unchanged**
+
+### 💭 Implementation Notes
+1. Always test changes in a development environment first
+2. Review the changes with your team before applying
+3. Consider the impact on existing functionality
+4. Update related tests and documentation
+`;
+    }
+
+    private static formatCodeSuggestionsAsDiff(analysis: string): string {
+        // Extract code blocks from analysis and format them as diffs
+        const codeBlockRegex = /```[\s\S]*?```/g;
+        const codeBlocks = analysis.match(codeBlockRegex) || [];
+        
+        if (codeBlocks.length === 0) {
+            return this.generateExampleCodeSuggestion();
+        }
+
+        let formattedSuggestions = `### 🔧 Suggested Code Changes\n\n`;
+        
+        codeBlocks.forEach((block, index) => {
+            // Try to identify the language and convert to diff format
+            const lines = block.split('\n');
+            const language = lines[0].replace('```', '').trim() || 'javascript';
+            
+            formattedSuggestions += `#### Fix ${index + 1}\n\n`;
+            formattedSuggestions += `\`\`\`diff\n`;
+            
+            // Process each line (skip the first and last ```)
+            for (let i = 1; i < lines.length - 1; i++) {
+                const line = lines[i];
+                // Simple heuristic: if line contains 'remove', 'delete', or is commented as old
+                if (line.includes('// remove') || line.includes('// old') || line.includes('// delete')) {
+                    formattedSuggestions += `- ${line}\n`;
+                } else if (line.includes('// add') || line.includes('// new') || line.includes('// fix')) {
+                    formattedSuggestions += `+ ${line}\n`;
+                } else {
+                    formattedSuggestions += `  ${line}\n`;
+                }
+            }
+            
+            formattedSuggestions += `\`\`\`\n\n`;
+        });
+
+        formattedSuggestions += `
+### 📌 How to Apply Changes
+1. 🔴 **Red lines** (starting with \`-\`): Remove these lines from your code
+2. 🟢 **Green lines** (starting with \`+\`): Add these lines to your code
+3. ⚪ **White lines**: Keep these lines unchanged
+
+### 🛡️ Safety Checklist
+- [ ] Backup your code before making changes
+- [ ] Test each change incrementally
+- [ ] Run your test suite after changes
+- [ ] Review changes in a pull request
+- [ ] Deploy to staging before production
+`;
+
+        return formattedSuggestions;
+    }
+
+    public static async openResultsFolder(context: vscode.ExtensionContext) {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        let folder: string;
+        
+        if (workspaceFolders) {
+            folder = path.join(workspaceFolders[0].uri.fsPath, '.ai-crash-finder-results');
+        } else {
+            folder = path.join(context.globalStorageUri.fsPath, 'results');
+        }
+
+        if (fs.existsSync(folder)) {
+            vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(folder));
+        } else {
+            vscode.window.showInformationMessage('No analysis results found yet.');
         }
     }
 }

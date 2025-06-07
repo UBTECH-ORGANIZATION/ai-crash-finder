@@ -41,7 +41,13 @@ export async function analyzeIssue(context: vscode.ExtensionContext) {
             progress.report({ message: 'Analyzing with AI...' });
             const analysis = await analyzeWithAI(diff, issueDescription);
 
-            ResultPanel.createOrShow(context.extensionUri, analysis);
+            ResultPanel.createOrShow(
+                context,
+                analysis,
+                issueDescription,
+                fromCommit.hash,
+                toCommit.hash
+            );
         });
 
     } catch (error) {

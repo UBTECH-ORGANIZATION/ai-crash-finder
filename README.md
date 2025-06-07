@@ -1,71 +1,164 @@
-# ai-crash-finder README
+# 🔍 AI Crash Finder
 
-This is the README for your extension "ai-crash-finder". After writing up a brief description, we recommend including the following sections.
+**AI Crash Finder** is a VS Code extension that uses Azure OpenAI to analyze git diffs and help developers quickly identify the root cause of production issues. It examines code changes between commits and provides intelligent insights about what might have caused a crash or bug.
 
-## Features
+![Version](https://img.shields.io/badge/version-0.0.1-blue)
+![VS Code](https://img.shields.io/badge/VS%20Code-^1.100.0-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## ✨ Features
 
-For example if there is an image subfolder under your extension project workspace:
+- **🤖 AI-Powered Analysis**: Leverages Azure OpenAI to analyze git diffs and identify potential causes of production issues
+- **📊 Git Integration**: Seamlessly works with your git repository to fetch and analyze commits
+- **🎯 Targeted Analysis**: Focuses on relevant file types (.ts, .js, .py, .java, .cpp, .cs, .go, .rb, .php, .yaml, .yml, .json)
+- **📝 Detailed Reports**: Generates comprehensive markdown reports with:
+  - Issue summary
+  - AI analysis results
+  - Suggested code fixes with diff formatting
+  - Quick action commands
+- **🔐 Secure Configuration**: Safely stores Azure OpenAI credentials using VS Code's secure storage
+- **💾 Persistent Results**: Saves analysis results as markdown files for future reference
 
-\!\[feature X\]\(images/feature-x.png\)
+## 📋 Prerequisites
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- VS Code version 1.100.0 or higher
+- A git repository in your workspace
+- Azure OpenAI account with:
+  - API key
+  - Endpoint URL
+  - Deployment name (e.g., `gpt-4o-mini`)
 
-## Requirements
+## 🚀 Installation
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1. Open VS Code
+2. Go to Extensions (Ctrl+Shift+X / Cmd+Shift+X)
+3. Search for "AI Crash Finder"
+4. Click Install
 
-## Extension Settings
+Or install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=your-publisher.ai-crash-finder)
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+## 🔧 Configuration
 
-For example:
+### First-time Setup
 
-This extension contributes the following settings:
+1. Run the command: `AI Crash Finder: Configure Azure OpenAI`
+2. Enter your Azure OpenAI credentials:
+   - **Endpoint**: Your Azure OpenAI endpoint (e.g., `https://your-resource.openai.azure.com/`)
+   - **API Key**: Your Azure OpenAI API key
+   - **Deployment**: Your model deployment name (e.g., `gpt-4o-mini`)
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+### Environment Variables (Optional)
 
-## Known Issues
+You can also set credentials via environment variables:
+```bash
+export AZURE_OPENAI_ENDPOINT="https://your-resource.openai.azure.com/"
+export AZURE_OPENAI_API_KEY="your-api-key"
+export AZURE_OPENAI_DEPLOYMENT="gpt-4o-mini"
+```
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## 📖 Usage
 
-## Release Notes
+### Analyzing an Issue
 
-Users appreciate release notes as you update your extension.
+1. Open a git repository in VS Code
+2. Run command: `AI Crash Finder: Analyze Issue` (or `AI: Analyze Issue from Git Diff`)
+3. Select the starting commit (older commit)
+4. Select the ending commit (newer commit)
+5. Describe the production issue (e.g., "Users cannot login after 5pm")
+6. Wait for the AI analysis to complete
+7. Review the generated markdown report
 
-### 1.0.0
+### Available Commands
 
-Initial release of ...
+| Command | Description |
+|---------|-------------|
+| `AI Crash Finder: Analyze Issue` | Start the analysis workflow |
+| `AI Crash Finder: Configure Azure OpenAI` | Set up or update Azure OpenAI credentials |
+| `AI Crash Finder: Clear Configuration` | Remove stored credentials |
+| `AI Crash Finder: Open Results Folder` | Open the folder containing analysis reports |
 
-### 1.0.1
+## 📄 Output Format
 
-Fixed issue #.
+The extension generates detailed markdown reports with:
 
-### 1.1.0
+### 1. Summary Section
+- Analysis timestamp
+- Commit range
+- Issue description
 
-Added features X, Y, and Z.
+### 2. AI Analysis
+- Identified problematic files and line numbers
+- Root cause analysis
+- Reasoning behind the findings
+
+### 3. Code Suggestions
+```diff
+# Example of suggested fixes
+- const query = `SELECT * FROM users WHERE id = ${userId}`;  // remove: SQL injection vulnerability
++ const query = 'SELECT * FROM users WHERE id = ?';          // add: parameterized query
++ const result = await db.query(query, [userId]);            // add: safe execution
+```
+
+### 4. Quick Actions
+- Git commands to view full diffs
+- Commands to checkout specific commits
+- Links to relevant documentation
+
+## 🏗️ Architecture
+
+```
+ai-crash-finder/
+├── src/
+│   ├── commands/       # Command handlers
+│   ├── config/         # Configuration management
+│   ├── git/           # Git integration
+│   ├── llm/           # Azure OpenAI client
+│   └── ui/            # Result display
+├── icon.png           # Extension icon
+└── package.json       # Extension manifest
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 🐛 Known Issues
+
+- The extension requires an active git repository in the workspace
+- Large diffs may exceed token limits for AI analysis
+- Only analyzes specific file types (configurable in future versions)
+
+## 📅 Roadmap
+
+- [ ] Support for custom file type filters
+- [ ] Integration with other AI providers (OpenAI, Anthropic)
+- [ ] Batch analysis of multiple commit ranges
+- [ ] Export reports in different formats (PDF, HTML)
+- [ ] Team collaboration features
+- [ ] CI/CD pipeline integration
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [VS Code Extension API](https://code.visualstudio.com/api)
+- Powered by [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- Git integration via [simple-git](https://github.com/steveukx/git-js)
+
+## 📞 Support
+
+- 🐛 [Report Issues](https://github.com/yourusername/ai-crash-finder/issues)
+- 💬 [Discussions](https://github.com/yourusername/ai-crash-finder/discussions)
+- 📧 Email: support@aicrashfinder.com
 
 ---
 
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Made with ❤️ by [Your Name]
