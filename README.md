@@ -10,7 +10,6 @@
 
 ### Watch AI Crash Finder in Action
 
-Option 3: If you upload to YouTube/Vimeo -->
 [![AI Crash Finder Demo](./media/icon.png)](https://youtu.be/D_PBbQ-rMAI)
 
 ### Quick Demo Walkthrough
