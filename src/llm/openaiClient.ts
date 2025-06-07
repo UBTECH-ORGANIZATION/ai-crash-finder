@@ -1,16 +1,28 @@
 import * as vscode from 'vscode';
-import OpenAI from 'openai';
+import { AzureOpenAI } from 'openai';
+import { ConfigManager } from '../config/configManager';
 
 export async function analyzeWithAI(diff: string, issueDescription: string): Promise<string> {
-    const config = vscode.workspace.getConfiguration('aiCrashFinder');
-    const apiKey = config.get<string>('openaiApiKey');
-
-    if (!apiKey) {
-        throw new Error('OpenAI API key not configured. Please add it in settings.');
+    const configManager = ConfigManager.getInstance();
+    const config = await configManager.getAzureOpenAIConfig();
+    
+    if (!config) {
+        // Prompt user for configuration if not set
+        const newConfig = await configManager.promptForConfiguration();
+        if (!newConfig) {
+            throw new Error('Azure OpenAI configuration is required. Please configure your settings.');
+        }
+        await configManager.saveAzureOpenAIConfig(newConfig);
+        return analyzeWithAI(diff, issueDescription); // Retry with new config
     }
 
-    const openai = new OpenAI({
-        apiKey: apiKey
+    const apiVersion = "2025-01-01-preview";
+
+    const client = new AzureOpenAI({ 
+        endpoint: config.endpoint, 
+        apiKey: config.apiKey, 
+        apiVersion, 
+        deployment: config.deployment 
     });
 
     try {
@@ -27,7 +39,8 @@ Please analyze the changes and provide:
 2. Your reasoning for why these changes might have caused the issue
 3. Potential solutions or areas to investigate further`;
 
-        const response = await openai.chat.completions.create({
+        const response = await client.chat.completions.create({
+            model: config.deployment,
             messages: [
                 {
                     role: "system",
@@ -38,15 +51,18 @@ Please analyze the changes and provide:
                     content: prompt
                 }
             ],
-            model: "gpt-4",
+            max_tokens: 2000,
             temperature: 0.3,
-            max_tokens: 2000
+            top_p: 0.95,
+            frequency_penalty: 0,
+            presence_penalty: 0,
+            stop: null
         });
 
         return response.choices[0]?.message?.content || 'No analysis generated';
 
     } catch (error) {
-        console.error('OpenAI API error:', error);
-        throw new Error('Failed to analyze with AI. Please check your API key and try again.');
+        console.error('Azure OpenAI API error:', error);
+        throw new Error('Failed to analyze with AI. Please check your Azure OpenAI configuration and try again.');
     }
 }

@@ -18,6 +18,18 @@
       {
         "command": "ai-crash-finder.analyzeIssue",
         "title": "AI: Analyze Issue from Git Diff"
+      },
+      {
+        "command": "aiCrashFinder.analyze",
+        "title": "AI Crash Finder: Analyze Issue"
+      },
+      {
+        "command": "aiCrashFinder.configure",
+        "title": "AI Crash Finder: Configure Azure OpenAI"
+      },
+      {
+        "command": "aiCrashFinder.clearConfig",
+        "title": "AI Crash Finder: Clear Configuration"
       }
     ]
   },
