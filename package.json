@@ -1,8 +1,8 @@
 {
-  "name": "ai-git",
-  "displayName": "AI Git",
+  "name": "ai-git-fix",
+  "displayName": "AI Git Fix",
   "description": "AI-powered root cause analysis for production issues using Git history",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "publisher": "motimalka",
   "icon": "media/icon.png",
   "engines": {

@@ -1,6 +1,6 @@
-# 🔍 AI Git
+# 🔍 AI Git Fix
 
-**AI Git** is a VS Code extension that uses Azure OpenAI to analyze git diffs and help developers quickly identify the root cause of production issues. It examines code changes between commits and provides intelligent insights about what might have caused a crash or bug.
+**AI Git Fix** is a VS Code extension that uses Azure OpenAI to analyze git diffs and help developers quickly identify the root cause of production issues. It examines code changes between commits and provides intelligent insights about what might have caused a crash or bug.
 
 ![Version](https://img.shields.io/badge/version-0.0.1-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-^1.100.0-brightgreen)
@@ -8,7 +8,7 @@
 
 ## 🎥 Demo
 
-### Watch AI Git in Action
+### Watch AI Git Fix in Action
 
 [![AI Git Demo](./media/icon.png)](https://youtu.be/D_PBbQ-rMAI)
 
